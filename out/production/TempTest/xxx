@@ -1,0 +1,101 @@
+String returnTxt = "r:" + inv.getRequest().getAttribute("rootPath") + "/tips/";
+
+        AppData app = parseResult.getAppData();
+        AppData onLineAppData = null;
+        int returnCode = parseResult.getReturnCode();
+        if (returnCode != SUCCESS) {
+            LOGGER.error("apk解析失败[" + returnCode + "]");
+            switch (returnCode) {
+                case IMAGE_FORMAT_ERROR :// apk图片格式错误
+                    return returnTxt + IMAGE_FORMAT_ERROR;
+                case APK_UPLOAD_ERROR :// APK文件上传错误
+                case ICON_UPLOAD_ERROR :// 图标文件上传错误
+                case AAPT_COMMAND_ERROR :// 调用命令aapt错误
+                case APK_MD5_ERROR :// 计算APK文件哈希值错误
+                    return returnTxt + UPLOAD_SERVER_ERROR;
+                case AAPT_OUTPUT_ERROR :// aapt输出错误
+                    return returnTxt + AAPT_OUTPUT_ERROR;
+                case RELEASE_KEY_ERROR :// 解析签名异常
+                    return returnTxt + RELEASE_KEY_ERROR;
+                case RELEASE_KEY_NOT_EQUAL :// 签名不一致
+                    StringBuilder params = new StringBuilder();
+                    KeyStore keyStore = client.getKeyStoreByPackageName(app.getAppInfo().getPackageName());
+                    params.append("?").append("originalReleaseKeyHash").append("=").append(keyStore.getOriginalReleaseKeyHash());
+                    params.append("&").append("orgParsedAppReleaseKeyHash").append("=").append(app.getReleaseKey().getReleaseKeyHash());
+                    onLineAppData = devAppProxy.getAppData(packageNameHash);
+                    if (onLineAppData != null) {
+                        params.append("&").append("onLineAppReleaseKeyHash").append("=")
+                                .append(onLineAppData.getAppOwnStatus().getReleaseKeyHash());
+                    }
+                    int sdkBitSet = app.getApkInfos().get(0).getIsSdkUpdate();
+                    if (SDKUtils.isPaymentSDK(sdkBitSet)) {
+                        params.append("&").append("paymentSDK").append("=").append(true);
+                    } else {
+                        params.append("&").append("paymentSDK").append("=").append(false);
+                    }
+                    return returnTxt + RELEASE_KEY_NOT_EQUAL + params;
+                default :
+                    return returnTxt + APK_PARSE_ERROR;
+            }
+        }
+
+        Long developerId = RequestUtil.getLongAttributeFromRequest(inv.getRequest(), "developerId");
+        Byte developerType = RequestUtil.getByteAttributeFromRequest(inv.getRequest(), "developerType");
+
+        onLineAppData = devAppProxy.getAppData(packageNameHash);
+        if (onLineAppData == null) {
+            inv.addModel("tips", "NULL");
+            return "tips";
+        }
+
+        String targetPackagenameHash = app.getAppInfo().getPackageNameHash();
+        if (!targetPackagenameHash.equalsIgnoreCase(packageNameHash)) {
+            return returnTxt + PACKAGE_NAME_NOT_EQUAL;
+        }
+
+        int result = this.devAppProxy.checkUpdateAppVersionCondition(app);
+        if (result != SUCCESS) {
+            if (result == APK_PARSE_ERROR) {
+                return returnTxt + APK_PARSE_ERROR;
+            } else if (result == PACKAGE_NAME_NOT_EQUAL) {
+                return returnTxt + PACKAGE_NAME_NOT_EQUAL;
+            } else if (result == SMALL_VERSIONCODE) {
+                return returnTxt + SMALL_VERSIONCODE;
+            } else if (result == BAN_ONLINE) {
+                return returnTxt + BAN_ONLINE;
+            } else if (result == NOT_OWN) {
+                return returnTxt + NOT_OWN;
+            } else if (result == RELEASE_KEY_NOT_EQUAL) {
+                return returnTxt + RELEASE_KEY_NOT_EQUAL;
+            } else if (result == NEW_APP) {
+                return returnTxt + NEW_APP;
+            } else if (result == UPDATEVERSIONSTATUS_ERROR) {
+                return returnTxt + UPDATEVERSIONSTATUS_ERROR;
+            } else if (result == SUITABLE_TYPE_FAMILY_CONFLICT) {
+                return returnTxt + SUITABLE_TYPE_FAMILY_CONFLICT;
+            } else {
+                return returnTxt + NULL;
+            }
+        }
+
+        // 标记非爬虫应用更新
+        onLineAppData.getAppInfo().setOperatorType(BackendConstants.OperatorType.DefaultOperator);
+
+        String[] ignoreProperties = {"icon", "versionName", "permissionIds", "displayName", "publisherName"};
+        BeanUtils.copyProperties(onLineAppData.getAppInfo(), app.getAppInfo(), ignoreProperties);
+
+        if (StringUtils.isBlank(app.getAppInfo().getDefaultLanguage())) {
+            app.getAppInfo().setDefaultLanguage(AppConstants.Language.zh_CN);
+        }
+
+        String tmp = uploadProxy.diskCacheObject(app);
+
+        onLineAppData.getAppInfo().setIcon(app.getAppInfo().getIcon());
+        onLineAppData.getAppInfo().setVersionName(app.getAppInfo().getVersionName());
+        onLineAppData.getAppInfo().setPermissionIds(app.getAppInfo().getPermissionIds());
+
+        AppAction.setAppInvModelNew(inv, onLineAppData, developerId, developerType);
+        inv.addModel("tmp", tmp);
+        inv.addModel("isUpdateApp", true);
+        inv.addModel("onlineLanguage", onLineAppData.getAppInfo().getLanguage());
+        return "app/upload/new-step2";

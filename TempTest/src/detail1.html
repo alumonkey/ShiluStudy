@@ -1,0 +1,922 @@
+<!--start header-->
+<!DOCTYPE html>
+<html lang="zh-CN" xml:lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+<meta name="description"
+      content="小米开放平台，包括小米应用商店的官方开发者后台以及其它服务，免费提供应用收录、上架服务。开发者可以在这里提交、上传和更新安卓应用与安卓游戏，同时也为开发者适配小米手机提供技术支持。"/>
+<meta name="keywords" content="小米开放平台，小米，小米商店，应用，APK，软件，游戏，商店，市场，开发者，提交，APK提交，提交应用，收录，上传，更新，应用更新，支持，技术支持"/>
+<title>小米开放平台</title>
+
+<link rel="stylesheet" href="../../../assets/game/css/demo/bs.min.css">
+<script src="../../../assets/game/js/demo/jquery.min.js"></script>
+<script src="../../../assets/game/js/demo/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="../../../assets/common/css/base.css"/>
+
+<script src="../../../assets/zh_CN/js/message_zh_CN.js"></script>
+<script src="../../../assets/common/js/init.js"></script>
+<script src="../../../assets/common/js/HdIconUpload.js"></script>
+<script src="../../../assets/common/js/browseUpgradeTip.js"></script>
+<script src="../../../assets/common/js/dialog.js"></script>
+<script src="../../../assets/common/js/resumableUpload.js"></script>
+<script src="../../../assets/common/js/screenShotUpload.js"></script>
+<script src="../../../assets/common/js/ga.js"></script>
+
+<link rel="shortcut icon" href="http://www.xiaomi.com/favicon.ico"/>
+<style type="text/css">
+.dev-common-head, .dev-common-footer {
+    font-family: "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+
+.dev-common-dropdown-container {
+    width: 1110px;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.dev-common-head {
+    min-width: 960px;
+    background-color: #262626;
+    box-shadow: 0 2px 3px rgba(2, 2, 2, 0.15);
+    background-image: -webkit-linear-gradient(bottom, #2c2e30, #37393c);
+    background-image: linear-gradient(to top, #2c2e30, #37393c);
+    color: #fff;
+    height: 60px;
+    position: relative;
+    z-index: 9999;
+}
+
+.dev-common-head a {
+    color: #fff;
+    text-decoration: none
+}
+
+.dev-common-head ul {
+    list-style: none
+}
+
+.dev-common-head-right {
+    float: right
+}
+
+.dev-common-head-nav {
+    float: left;
+    padding: 0 0 0 20px;
+    margin: 0;
+}
+
+.dev-common-head-nav li {
+    float: left
+}
+
+.dev-common-head-nav li a {
+    display: inline-block;
+    padding: 0 23px;
+    line-height: 60px;
+    font-size: 16px;
+    margin-right: 1px
+}
+
+.dev-common-head-nav li a:hover {
+    color: #fff;
+    text-decoration: none;
+    background: #f60
+}
+
+.dev-common-logo {
+    text-indent: -9999px;
+    display: block;
+    float: left;
+    width: 206px;
+    height: 40px;
+    margin: 10px 0 0 33px;
+    background: url(//sec.resource.xiaomi.net/miuimarket/dev/v2/logo1.png) 0 0 no-repeat
+}
+
+.dev-common-local {
+    font-size: 12px;
+    margin-right: 16px;
+    vertical-align: middle;
+    color: #919191;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.dev-common-local .dev-common-topbar-divider {
+    color: #414141;
+    padding: 0;
+}
+
+.dev-common-local a, .dev-common-local span {
+    padding: 11px 6px;
+}
+
+.dev-common-local a {
+    color: #919191;
+}
+
+.dev-common-local a:hover {
+    color: #fff;
+}
+
+.dev-common-head-server {
+    height: 60px;
+    padding: 0 23px;
+    cursor: pointer;
+}
+
+.dev-common-head-server span {
+    line-height: 60px;
+    vertical-align: middle;
+    font-size: 16px;
+}
+
+#devCommonLogin {
+    position: relative;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    height: 60px;
+    margin: 0 8px 0 25px;
+    width: 151px;
+    z-index: 999;
+}
+
+.dev-common-login-user {
+    height: 60px;
+    padding: 0 12px;
+    color: #919191;
+    cursor: pointer;
+}
+
+.dev-common-dropdown.active .dev-common-caret {
+    opacity: 1;
+    -webkit-transform-origin: 50% 50%;
+    -webkit-transform: rotate(180deg);
+    transform-origin: 50% 50%;
+    transform: rotate(180deg)
+}
+
+.dev-common-dropdown.active .dev-common-login-user {
+    color: #fff
+}
+
+.dev-common-dropdown {
+    display: inline-block;
+    height: 60px;
+    -webkit-user-select: none;
+    -moz-user-select: none; /*火狐*/
+    -ms-user-select: none; /*IE10*/
+    -khtml-user-select: none; /*早期浏览器*/
+    user-select: none;
+}
+
+.dev-common-dropdown span {
+    line-height: 60px;
+    vertical-align: middle
+}
+
+.dev-common-user-name {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 103px;
+    text-align: right;
+    margin-right: 6px;
+    font-size: 14px;
+}
+
+.dev-common-login-menu {
+    position: absolute;
+    width: 140px;
+    right: 0;
+    padding: 3px 0;
+    background: #262626;
+    position: absolute;
+    border: 1px solid #262626;
+    border-top: 0;
+    border-radius: 5px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin: -100px 0 0 0;
+}
+
+.dev-common-login-menu a {
+    display: block;
+    padding: 7px 18px;
+    text-align: center
+}
+
+.dev-common-login-menu a:hover {
+    background: #f60
+}
+
+.dev-common-caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 4px solid #fff;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    content: "";
+    opacity: .6;
+    transition: transform .3s ease
+}
+
+.dev-common-login-regist {
+    text-align: right;
+}
+
+.dev-common-login-regist a {
+    margin: 0 10px 0 0;
+    line-height: 60px;
+    vertical-align: middle
+}
+
+.dev-common-head-divide {
+    margin: 0 10px 0 0;
+    line-height: 60px;
+    vertical-align: middle;
+    color: #acaaaa
+}
+
+.dev-common-dropdown-wrap .dev-common-subnav {
+    position: absolute;
+    background: #f60;
+    width: 100%;
+    left: 0;
+    min-height: 100px;
+    padding-bottom: 28px;
+    margin-top: -178px;
+    box-shadow: 0px 3px 3px 0px rgba(71, 51, 51, 0.36);
+}
+
+.dev-common-subnav dl {
+    float: left;
+    width: 26%;
+}
+
+.dev-common-subnav dt {
+    font-size: 18px;
+    line-height: 1.8;
+    padding: 6px 0 3px 0;
+    text-align: center;
+    border-bottom: 1px solid #fff;
+    margin: 0 32px 5px;
+    font-weight: normal;
+}
+
+.dev-common-subnav dl, .dev-common-subnav dd, .dev-common-subnav ul {
+    padding: 0;
+    margin: 0;
+}
+
+.dev-common-subnav ul {
+    overflow: hidden;
+}
+
+.dev-common-subnav li a {
+    margin-left: 30px;
+    padding: 3px 6px;
+    line-height: 1.5;
+    width: 100px;
+}
+
+.dev-common-subnav li a:hover {
+    text-decoration: underline;
+}
+
+.dev-common-dropdown-wrap .dev-common-dropdown-show {
+    display: block;
+    position: relative;
+    transition: all 0.3s cubic-bezier(1, -0.31, .28, .68);
+    padding-top: 60px;
+    top: -56px;
+    z-index: 990;
+}
+
+.dev-common-dropdown.active .dev-common-dropdown-show {
+    transition: all 0.3s cubic-bezier(.06, 1.36, .52, 1);
+    margin-top: 0;
+}
+
+.dev-common-dropdown.active .dev-common-dropdown-wrap {
+    max-height: 1500px;
+    transition: all 0.3s cubic-bezier(.06, 1.36, .52, 1);
+}
+
+.dev-common-dropdown-wrap {
+    position: absolute;
+    top: 100%;
+    margin: 0;
+    padding: 0;
+    left: 0;
+    width: 100%;
+    max-height: 0;
+    transition: all 0.3s cubic-bezier(1, -0.31, .28, .68);
+    overflow: hidden;
+    z-index: 999;
+}
+
+/*footer 1*/
+.dev-common-footer a {
+    text-decoration: none;
+}
+
+.dev-common-footer a:hover {
+    text-decoration: underline;
+}
+
+.dev-common-footer {
+    text-align: center;
+    padding: 24px 0;
+    font-size: 13px;
+}
+
+.dev-common-footer, .dev-common-footer a {
+    color: #999;
+}
+
+.dev-common-footer p {
+    margin: 0 0 3px 0;
+}
+
+.dev-common-footer-link {
+    margin-bottom: 6px;
+}
+</style>
+
+<!--jsp:从这往下都是.jsp文件，但需要替换这往下的导航条部分-->
+<!--游戏详情2页开始css-->
+<link rel="stylesheet" href="../../../assets/game/css/style.css"/>
+<link rel="stylesheet" href="../../../assets/game/css/charge.css"/>
+<!--游戏详情2页结束css-->
+</head>
+<body>
+<div class="dev-common-head">
+    <a href="/index" class="dev-common-logo">小米开放平台</a>
+
+    <div class="dev-common-head-right">
+        <ul class="dev-common-head-nav">
+            <li class="dev-common-dropdown" id="devCommonNav">
+                <div class="dev-common-head-server"><span>平台服务</span> <span class="dev-common-caret"></span></div>
+                <div class="dev-common-dropdown-wrap">
+                    <div class="dev-common-subnav dev-common-dropdown-show">
+                        <div class="dev-common-dropdown-container">
+                            <dl>
+                                <dt>应用接入</dt>
+                                <dd>
+                                    <ul>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=1666">手机平板</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=5136">电视应用</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=5108">黄页应用</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=5174">路由器插件</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=2303">网页应用</a></li>
+                                    </ul>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>移动开发服务</dt>
+                                <dd>
+                                    <ul>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=1670">消息推送</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=1722">检查更新</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=1668">帐号接入</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc?page_id=3353">支付服务</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc?page_id=4023">统计服务</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=5563 ">云测服务</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=5654">应用推广</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/page_id=6824/index.html">流量服务</a></li>
+                                    </ul>
+                                </dd>
+                            </dl>
+                            <dl style="width:22%">
+                                <dt>小米云服务</dt>
+                                <dd>
+                                    <ul>
+                                        <li><a href="http://dev.xiaomi.com/doc/page_id=6774/index.html">用户概况</a></li>
+                                    </ul>
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>生态云</dt>
+                                <dd>
+                                    <ul>
+                                        <li><a href="http://dev.xiaomi.com/doc?page_id=3981">云主机</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=2095">结构化存储</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc?page_id=5101">文件存储</a></li>
+                                        <li><a href="http://dev.xiaomi.com/doc/?page_id=5662">数据分析处理</a></li>
+                                    </ul>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li><a href="/home">管理控制台</a></li>
+            <li><a href="http://developer.xiaomi.com/doc/">文档</a></li>
+            <li><a href="http://www.miui.com/forum-423-1.html" target="_blank">论坛</a></li>
+            <li><a href="http://dev.xiaomi.com/doc/?page_id=6281">联系我们</a></li>
+        </ul>
+        <div class="dev-common-dropdown" id="devCommonLogin">
+            <div class="dev-common-login-user"><span class="dev-common-user-name"> 北京瓦力网络科技有限公司 </span> <span
+                    class="dev-common-caret"></span></div>
+            <div class="dev-common-dropdown-wrap">
+                <ul class="dev-common-login-menu dev-common-dropdown-show">
+                    <li><a href="/keycenter">密钥中心</a></li>
+                    <li><a href="/user">资料修改</a></li>
+                    <li><a href="/logout">注销</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end header-->
+
+<!--开始html-->
+<div class="container detail2-container detail1-container">
+    <div class="props-head">
+        <div class="detail-tag">
+            <ul>
+                <li class="detail-steps active">当前版本</li>
+                <li class="detail-steps" onclick="javascript:window.location.href='detail11.html'">更新版本</li>
+            </ul>
+        </div>
+    </div>
+    <div class="game-intrs">
+        <img class="fl" src="../../../assets/game/img/demo/xiaoxiaole.png"/>
+        <div class="game-intrs-desc fl">
+            <div class="intrs-desc-title"><h1>开心消消乐</h1></div>
+            <table class="intrs-desc-table">
+                <tr>
+                    <td>AppID：23683</td>
+                </tr>
+                <tr>
+                    <td>游戏状态：<span class="carefor">基础信息审核中</span></td>
+                    <td>当前版本：--</td>
+                </tr>
+                <tr>
+                    <td>创建时间：2015-01-01</td>
+                    <td>更新时间：2015-01-01</td>
+                    <td>崩溃日志：当前没有崩溃日志</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="detail-body detail1-body">
+        <div class="main-tag">
+            <ul class="unstyled">
+                <li class="measurements-steps1 active">基础信息</li>
+                <li class="measurements-steps2" onclick="javascript:window.location.href='detail2.html'">计费信息</li>
+            </ul>
+        </div>
+        <div class="main-body detail1-core">
+            <div class="props-head">
+                <h1>基础信息</h1>
+            </div>
+            <div class="info-body">
+                <table class="form-table detail1-table">
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">游戏名称</span>：
+                        </td>
+                        <td><input class="form basic-input" id="game_name" name="game_name" maxlength="30" type="text"/></td>
+                        <td class="tip-txt added">
+                            <span class="cuowu-info"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">游戏包名</span>：
+                        </td>
+                        <td><input class="form basic-input" id="pkg_name"  name="pkg_name" maxlength="30" type="text" placeholder="命名规则：com+您的公司名称+您的游戏名称+mi"/></td>
+                        <td class="tip-txt added">
+                            <span class="cuowu-info"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">游戏分类</span>：
+                        </td>
+                        <td class="input-td">
+                            <select id="classify-select" class="info-select" id="game_classify" name="game_classify" onchange="classifyChange()">
+                                <option>1</option>
+                                <option>2</option>
+                                <option>3</option>
+                                <option>4</option>
+                                <option>5</option>
+                                <option>儿童益智</option><!--根据“儿童益智”显示child-ages-->
+                            </select>
+                        </td>
+                        <td class="tip-txt added">
+                            <span class="cuowu-info"游戏名称不能为空</span>
+                        </td>
+                    </tr>
+                    <tr class="child-ages" >
+                        <td colspan="3">
+                            <span class="must-xing">*</span>
+                            <span class="choose-age">适配年龄段（单选）：</span>
+                            <div class="ages">
+                                <input class="hidden-input" type="radio" name="radios" id="radios1" value="option1"/>
+                                <label for="radios1">
+                                    <div class="yuan"><div class="hei"></div></div>
+                                    &nbsp;五岁及以下
+                                </label>
+                            </div>
+                            <div class="ages">
+                                <input class="hidden-input" type="radio" name="radios" id="radios2" value="option2"/>
+                                <label for="radios2">
+                                    <div class="yuan"><div class="hei"></div></div>
+                                    &nbsp;6~8岁
+                                </label>
+                            </div>
+                            <div class="ages">
+                                <input class="hidden-input" type="radio" name="radios" id="radios3" value="option3"/>
+                                <label for="radios3">
+                                    <div class="yuan"><div class="hei"></div></div>
+                                    &nbsp;7~11岁
+                                </label>
+                            </div>
+                            <span class="cuowu-info"游戏名称不能为空</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">关键字</span>：
+                        </td>
+                        <td><input class="form basic-input" name="game_key" id="game_key" maxlength="30" type="text"/></td>
+                        <td class="tip-txt added">
+                            <span class="cuowu-info"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">开发者名称</span>：
+                        </td>
+                        <td><input class="form basic-input" name="dever_name" id="dever_name" maxlength="30" type="text"/></td>
+                        <td class="tip-txt added">该名称仅用于在游戏中心内向玩家显示使用<span class="cuowu-info"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">开发商名称</span>：
+                        </td>
+                        <td><input class="form basic-input" name="devshop_name" id="devshop_name" maxlength="30" type="text"/></td>
+                        <td class="tip-txt added">
+                            <span class="cuowu-info"游戏名称不能为空</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">游戏介绍</span>：
+                        </td>
+                        <td  colspan="2">
+                            <textarea class="basic-txtarea" name="game_intro" id="game_intro">
+    国民动作卡牌手游--《刀塔传奇》首部资料片“决战圣域”火爆上线！
+
+    诸王争霸，真人实时对战，随时随地尽享PK快感！
+    战队领地，装备免费打造，英雄能力由你掌控！
+    五军决战，策略烧脑阵容尽情搭配，看谁成为最终王者？
+
+    全新英雄和缤纷活动将同步揭晓，精彩等你体验。是英雄，就在此刻，爆发而起！自上线以来，多次登顶AppStore畅销榜榜首，8000万玩家共同演绎了“刀塔传奇，无处不在”的手游神话！
+
+    最具人气的国民动作卡牌手游大作，引领全球手游新格局！玩手机游戏，就玩《刀塔传奇》！</textarea>
+                            <span class="cuowu-info"游戏名称不能为空</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="field-name">
+                            <span class="name">更新说明</span>：
+                        </td>
+                        <td  colspan="2">
+                            <textarea class="basic-txtarea game_update" name="game_update" id="game_update">
+    国民动作卡牌手游--《刀塔传奇》首部资料片“决战圣域”火爆上线！
+
+    诸王争霸，真人实时对战，随时随地尽享PK快感！
+    战队领地，装备免费打造，英雄能力由你掌控！
+    五军决战，策略烧脑阵容尽情搭配，看谁成为最终王者？
+
+    全新英雄和缤纷活动将同步揭晓，精彩等你体验。是英雄，就在此刻，爆发而起！自上线以来，多次登顶AppStore畅销榜榜首，8000万玩家共同演绎了“刀塔传奇，无处不在”的手游神话！
+
+    最具人气的国民动作卡牌手游大作，引领全球手游新格局！玩手机游戏，就玩《刀塔传奇》！</textarea>
+                            <span class="cuowu-info"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="props-head">
+                <h1>适配设备</h1>
+            </div>
+            <div class="device-body">
+                <div class="device-title">
+                    <div class="device-checkbox">
+                        <p class="btn cancel fr anything" title="为什么要选择手机？" data-container="body" data-toggle="popover" data-placement="left"
+                           data-content="这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！">?</p>
+                        <input type="checkbox" value="phone" id="checkPhone"/>
+                        <label for="checkPhone"></label>
+                        <span>手机</span>
+                    </div>
+                </div>
+                <div class="device-inter phone-device">
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>游戏截图（不少于3张）：
+                        <span class="field-tip">横竖不限：尺寸：1280 x 720 or 720 x 1280；图片格式：jpg；图片大小：不大于1MB</span>
+                        <a class="base-link" href="###">查看示例</a>
+                    </div>
+                    <div class="img-container">
+                        <div class="place-img phone-shot">
+                            <div class="screentshot-wrap">
+                                <div id="sortableWrap" class="sortable-wrap"></div>
+                                <span class="cuowu-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="device-title">
+                    <div class="device-checkbox">
+                        <p class="btn cancel fr anything" title="为什么要选择平板？" data-container="body" data-toggle="popover" data-placement="left"
+                           data-content="这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！">?</p>
+                        <input type="checkbox" value="pad" id="checkPad"/>
+                        <label for="checkPad"></label>
+                        <span>小米平板</span>
+                    </div>
+                </div>
+                <div class="device-inter pad-device">
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>游戏截图（不少于3张）：
+                        <span class="field-tip">横竖不限：尺寸：1280 x 720 or 720 x 1280；图片格式：jpg；图片大小：不大于1MB</span>
+                        <a class="base-link" href="###">查看示例</a>
+                    </div>
+                    <div class="img-container">
+                        <div class="place-img phone-shot">
+                            <div class="screentshot-wrap">
+                                <div id="sortablePadWrap" class="sortable-wrap"></div>
+                                <span class="cuowu-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>游戏海报（不少于3张）：
+                        <span class="field-tip">横竖不限：尺寸：320 x 448；图片格式：jpg；图片大小：200KB以内</span>
+                        <a class="base-link" href="###">查看示例</a>
+                    </div>
+                    <div class="img-container">
+                        <div class="place-img phone-shot">
+                            <div class="screentshot-wrap">
+                                <div id="sortablePosterWrap" class="sortable-wrap"></div>
+                                <span class="cuowu-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="device-title">
+                    <div class="device-checkbox">
+                        <p class="btn cancel fr anything" title="为什么要选择电视？" data-container="body" data-toggle="popover" data-placement="left"
+                           data-content="这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！这是问号的答案！">?</p>
+                        <input type="checkbox" value="tv" id="checkTV"/>
+                        <label for="checkTV"></label>
+                        <span>小米电视&盒子</span>
+                    </div>
+                </div>
+                <div class="device-inter tv-device">
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>操控方式：我们会根据您的选择进行相应的测试。
+                        <a class="base-link" href="###">适配指导</a>
+                    </div>
+                    <div class="screen-shot mani-container">
+                        <div class="device-checkbox mani-style">
+                            <input type="checkbox" value="1" id="check1"/>
+                            <label for="check1"></label>
+                            <span>遥控器</span>
+                        </div>
+                        <div class="device-checkbox mani-style">
+                            <input type="checkbox" value="1" id="check2"/>
+                            <label for="check2"></label>
+                            <span>小米蓝牙手柄</span>
+                        </div>
+                        <div class="device-checkbox mani-style">
+                            <input type="checkbox" value="1" id="check3"/>
+                            <label for="check3"></label>
+                            <span>小米体感遥控器</span>
+                        </div>
+                        <div class="device-checkbox mani-style">
+                            <input type="checkbox" value="1" id="check4"/>
+                            <label for="check4"></label>
+                            <span>智能手机手机操控</span>
+                        </div>
+                    </div>
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>电视游戏ICON：
+                        <a class="base-link" href="###">查看示例</a>
+                    </div>
+                    <div class="img-container">
+                        <div class="place-img post-img">
+                            <div class="screentshot-wrap">
+                                <div id="sortableTvIconWrap" class="sortable-wrap"></div>
+                                <span class="cuowu-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>游戏截图（不少于3张）：
+                        <span class="field-tip">尺寸：1920 x 1080；图片格式：jpg；图片大小：1MB以内</span>
+                        <a class="base-link" href="###">查看示例</a>
+                        <span class="cuowu-info"></span>
+                    </div>
+                    <div class="img-container">
+                        <div class="place-img tv-shot">
+                            <div class="screentshot-wrap">
+                                <div id="sortableTvWrap" class="sortable-wrap"></div>
+                                <span class="cuowu-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="screen-shot">
+                        <span class="must-xing">*</span>游戏海报（不少于3张）：
+                        <span class="field-tip">尺寸：268 x 384；格式：jpg；大小：200KB以内</span>
+                        <a class="base-link" href="###">查看示例</a>
+                        <span class="cuowu-info"></span>
+                    </div>
+                    <div class="img-container">
+                        <div class="place-img tv-poster">
+                            <div class="screentshot-wrap">
+                                <div id="sortableTvPosterWrap" class="sortable-wrap"></div>
+                                <span class="cuowu-info"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="next-step">
+            <input class="btn-orange btn-large btn-new" id="info-submit" type="submit" value="保存">
+        </div>
+    </div>
+
+
+</div>
+<script>
+    $('.dev-common-head').css('min-width','1085px');
+    $(function () {
+        $("[data-toggle='popover']").popover();//问号的提示
+//初始化选中框及相应dom的显隐
+        if( $('#classify-select').find("option:selected").text() !="儿童益智" ){
+            $('.child-ages').hide();
+        }else{
+            $('.child-ages').show();
+        }
+
+        var checkTV = $('#checkTV');
+        var checkPhone = $('#checkPhone');
+        var checkPad = $('#checkPad');
+        var tvDevice = $('.tv-device');
+        var phoneDevice = $('.phone-device');
+        var padDevice = $('.pad-device');
+
+        if(checkTV.attr('checked')){
+            tvDevice.show();
+        }
+        if(checkPhone.attr('checked')){
+            phoneDevice.show();
+        }
+        if(checkPad.attr('checked')){
+            padDevice.show();
+        }
+
+        checkTV.change(function () {
+            tvDevice.toggle();
+        });
+        checkPhone.change(function () {
+            if(checkPhone.attr('checked')){
+                phoneDevice.show();
+            }else{
+                phoneDevice.hide();
+            }
+        });
+        checkPad.change(function () {
+            if(checkPad.attr('checked')){
+                padDevice.show();
+            }else{
+                padDevice.hide();
+            }
+        });
+
+// 手机截图
+        var thumblist = [];
+        var su = new ScreenshotUpload({
+            urls: thumblist,
+            maxcount: 5,
+            self: 'su',
+            content: 'sortableWrap',
+            action: '/uploadscreenshot',
+//        userId: '3669018',
+//        serviceToken: 'bbX9mcy9iNOKVUwfjodOgHcTkwTnth+ocl9iS+cpAJVpbQWjlXf+8SrKEde2xV84Rm9GkepStf1hH0KxqdWxnx1PNyaheURA7inEFDDCsH+4JgU0oC7MWeFBxjTNASuy',
+            preId: 'mobile'
+        });
+        window['su'] = su;
+
+// 电视和盒子截图
+        var tvThumblist = [];
+        var tvSu = new ScreenshotUpload({
+            urls: tvThumblist,
+            maxcount: 5,
+            self: 'tvSu',
+            content: 'sortableTvWrap',
+            action: '/uploadscreenshotForTv',
+//        userId: '3669018',
+//        serviceToken: 'bbX9mcy9iNOKVUwfjodOgHcTkwTnth+ocl9iS+cpAJVpbQWjlXf+8SrKEde2xV84Rm9GkepStf1hH0KxqdWxnx1PNyaheURA7inEFDDCsH+4JgU0oC7MWeFBxjTNASuy',
+            preId: 'tv'
+//        screenName: 'screenForTv'
+        });
+        window['tvSu'] = tvSu;
+
+        // 电视和盒子icon
+        var tvIconThumblist = [];
+        var tvIconSu = new ScreenshotUpload({
+            urls: tvIconThumblist,
+            maxcount: 5,
+            self: 'tvIconSu',
+            content: 'sortableTvIconWrap',
+            action: '/uploadscreenshotForTv',
+//        userId: '3669018',
+//        serviceToken: 'bbX9mcy9iNOKVUwfjodOgHcTkwTnth+ocl9iS+cpAJVpbQWjlXf+8SrKEde2xV84Rm9GkepStf1hH0KxqdWxnx1PNyaheURA7inEFDDCsH+4JgU0oC7MWeFBxjTNASuy',
+            preId: 'tvIcon'
+//        screenName: 'screenForTv'
+        });
+        window['tvIconSu'] = tvIconSu;
+
+        // 电视和盒子海报
+        var tvPosterThumblist = [];
+        var tvPosterSu = new ScreenshotUpload({
+            urls: tvPosterThumblist,
+            maxcount: 5,
+            self: 'tvPosterSu',
+            content: 'sortableTvPosterWrap',
+            action: '/uploadscreenshotForTv',
+//        userId: '3669018',
+//        serviceToken: 'bbX9mcy9iNOKVUwfjodOgHcTkwTnth+ocl9iS+cpAJVpbQWjlXf+8SrKEde2xV84Rm9GkepStf1hH0KxqdWxnx1PNyaheURA7inEFDDCsH+4JgU0oC7MWeFBxjTNASuy',
+            preId: 'tvPoster'
+//        screenName: 'screenForTv'
+        });
+        window['tvPosterSu'] = tvPosterSu;
+
+        // pad截图
+        var padThumblist = [];
+        var padSu = new ScreenshotUpload({
+            urls: padThumblist,
+            maxcount: 5,
+            self: 'padSu',
+            content: 'sortablePadWrap',
+            action: '//uploadscreenshot',
+//        userId: '3669018',
+//        serviceToken: 'bbX9mcy9iNOKVUwfjodOgHcTkwTnth+ocl9iS+cpAJVpbQWjlXf+8SrKEde2xV84Rm9GkepStf1hH0KxqdWxnx1PNyaheURA7inEFDDCsH+4JgU0oC7MWeFBxjTNASuy',
+            preId: 'pad'
+//        screenName: 'screenForPad',
+        });
+        window['padSu'] = padSu;
+        // pad海报
+        var posterThumblist = [];
+        var posterSu = new ScreenshotUpload({
+            urls: padThumblist,
+            maxcount: 5,
+            self: 'posterSu',
+            content: 'sortablePosterWrap',
+            action: '//uploadscreenshot',
+//        userId: '3669018',
+//        serviceToken: 'bbX9mcy9iNOKVUwfjodOgHcTkwTnth+ocl9iS+cpAJVpbQWjlXf+8SrKEde2xV84Rm9GkepStf1hH0KxqdWxnx1PNyaheURA7inEFDDCsH+4JgU0oC7MWeFBxjTNASuy',
+            preId: 'poster'
+//        screenName: 'screenForPad',
+        });
+        window['posterSu'] = posterSu;
+
+    });
+
+    //根据儿童益智显示选择年龄段
+    function classifyChange(){
+        if( $('#classify-select').find("option:selected").text() !="儿童益智" ){
+            $('.child-ages').hide();
+        }else{
+            $('.child-ages').show();
+        }
+    }
+</script>
+<!--结束html-->
+
+<!--start footer-->
+<div class="dev-common-footer">
+    <div class="dev-common-footer">
+        <div><p>小米科技 京ICP备10046444号 京公网安备1101080212535</p></div>
+    </div>
+</div>
+</body>
+</html>
+<!--end footer-->
