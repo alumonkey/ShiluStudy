@@ -1,0 +1,84 @@
+public static Map<String, Integer> doGetGameItemStatus(List<AppInfo> gameItems, Invocation inv)
+            throws com.xiaomi.appstore.openplatform.exception.CatchableException, TException, CatchableException {
+        Map<String, Long> hasOnlineTime = new HashMap<String, Long>();
+        Map<String, Long> hasScheduledOnlineTime = new HashMap<String, Long>();
+        // 返回状态处理状态
+        Map<String, Integer> statusMap = new HashMap<String, Integer>();
+        int all = 0;
+        int selling = 0;
+        int cancelled = 0;
+        int uncommitted = 0;
+        int auditing = 0;
+        int auditFailed = 0;
+        int scheduled = 0;
+        if (gameItems == null || gameItems.isEmpty()) {
+            statusMap.put("all", all);
+            statusMap.put("selling", selling);
+            statusMap.put("cancelled", cancelled);
+            statusMap.put("uncommitted", uncommitted);
+            statusMap.put("auditing", auditing);
+            statusMap.put("auditFailed", auditFailed);
+            statusMap.put("scheduled", scheduled);
+            return statusMap;
+        }
+
+        int gameItemsSize = gameItems.size();
+
+        for (AppInfo displayInfo : gameItems) {
+            int status = displayInfo.getStatus();
+            int timedOnlineStatus = displayInfo.getTimedOnlineStatus();
+            // 定时上线游戏
+            if (GameStatus.isScheduledApp(status, timedOnlineStatus, displayInfo)) {
+                scheduled++;
+                displayInfo.setSummary(GameStatus.transStatusToHtmlScheduledApp(displayInfo, inv));
+                // 游戏从app_online_config_info表里取定时上线时间.
+                if (displayInfo.getLevel1CategoryId() == 15) {
+                    AppOnlineConfigInfo onlineInfo = gameOnlineInfoProxy.getAppOnlineConfigInfoByAppId(displayInfo.getAppId());
+                    LOGGER.debug("onlineInfo" + onlineInfo);
+                    if (onlineInfo.getOnlineTime()!=0) {
+                        hasScheduledOnlineTime.put(displayInfo.getPackageName(), onlineInfo.getOnlineTime());
+                    } else {
+                        hasScheduledOnlineTime.put(displayInfo.getPackageName(), displayInfo.getOnlineTime());
+                    }
+                } else {
+                    // 如果是定时上线任务,取audit_app_info表
+                    hasScheduledOnlineTime.put(displayInfo.getPackageName(), displayInfo.getOnlineTime());
+                }
+                continue;
+            }
+            //
+            if (GameStatus.isSellingApp(status)) {
+                selling++;
+                displayInfo.setSummary(GameStatus.transStatusToHtml(displayInfo, inv));
+                hasOnlineTime.put(displayInfo.getPackageName(), displayInfo.getUpdateTime());
+                continue;
+            } else if (GameStatus.isAuditingApp(status)) {
+                auditing++;
+                displayInfo.setSummary(GameStatus.transStatusToHtml(displayInfo, inv));
+                continue;
+            } else if (GameStatus.isAuditFailedApp(status)) {
+                auditFailed++;
+                displayInfo.setSummary(GameStatus.transStatusToHtml(displayInfo, inv));
+                continue;
+            } else if (GameStatus.isCanceledApp(status)) {
+                cancelled++;
+                displayInfo.setSummary(GameStatus.transStatusToHtml(displayInfo, inv));
+                continue;
+            } else if (GameStatus.isUncommitApp(status)) {
+                displayInfo.setSummary(GameStatus.transStatusToHtml(displayInfo, inv));
+                uncommitted++;
+                continue;
+            }
+        }
+        all = selling + cancelled + uncommitted + auditFailed + auditing + scheduled;
+        statusMap.put("all", all);
+        statusMap.put("selling", selling);
+        statusMap.put("cancelled", cancelled);
+        statusMap.put("uncommitted", uncommitted);
+        statusMap.put("auditing", auditing);
+        statusMap.put("auditFailed", auditFailed);
+        statusMap.put("scheduled", scheduled);
+        inv.addModel("hasOnlineTime", hasOnlineTime);
+        inv.addModel("hasScheduledOnlineTime", hasScheduledOnlineTime);
+        return statusMap;
+    }
